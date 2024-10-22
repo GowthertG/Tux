@@ -1,0 +1,32 @@
+#!/bin/bash
+
+SESSION="$(basename $(pwd))"
+EXIST=$(tmux ls | grep "$SESSION")
+WORK_DIR="$(pwd)"
+VENV="$WORK_DIR/.venv/bin/activate"
+
+if [ -z "$EXIST" ]; then
+
+  #CREATE SESSION
+  tmux new-session -d -s $SESSION
+
+  #VIM WINDOW
+  tmux rename-window -t 1 'Vim'
+  tmux send-key -t 'Vim' "source $VENV" C-m
+  tmux send-key -t 'Vim' "cd $WORK_DIR" C-m
+  tmux send-key -t 'Vim' 'nvim' C-m
+
+  #LIVE SERVER WINDOW
+  tmux new-window -n "BASH" -t "$SESSION"
+  tmux send-key -t 'BASH' "source $VENV" C-m
+  tmux send-key -t 'BASH' "cd $WORK_DIR" C-m
+  tmux send-key -t 'BASH' "clear" C-m
+
+  #LIVE SERVER WINDOW
+  tmux new-window -n "LIVE-SERVER" -t "$SESSION"
+  tmux send-key -t 'LIVE-SERVER' "source $VENV" C-m
+  tmux send-key -t 'LIVE-SERVER' "cd $WORK_DIR" C-m
+  tmux send-key -t 'LIVE-SERVER' "clear" C-m
+  tmux send-key -t 'LIVE-SERVER' './manage.py runserver' C-m
+fi
+tmux attach-session -t "$SESSION":1
