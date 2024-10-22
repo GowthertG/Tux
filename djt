@@ -16,7 +16,7 @@ if [ -z "$EXIST" ]; then
   tmux send-key -t 'Vim' "cd $WORK_DIR" C-m
   tmux send-key -t 'Vim' 'nvim' C-m
 
-  #LIVE SERVER WINDOW
+  #LIVE BASH WINDOW
   tmux new-window -n "BASH" -t "$SESSION"
   tmux send-key -t 'BASH' "source $VENV" C-m
   tmux send-key -t 'BASH' "cd $WORK_DIR" C-m
