@@ -5,28 +5,107 @@ EXIST=$(tmux ls | grep "$SESSION")
 WORK_DIR="$(pwd)"
 VENV="$WORK_DIR/.venv/bin/activate"
 
-if [ -z "$EXIST" ]; then
-
-  #CREATE SESSION
-  tmux new-session -d -s $SESSION
-
-  #VIM WINDOW
+start_vim() {
   tmux rename-window -t 1 'Vim'
   tmux send-key -t 'Vim' "source $VENV" C-m
   tmux send-key -t 'Vim' "cd $WORK_DIR" C-m
   tmux send-key -t 'Vim' 'nvim' C-m
 
-  #LIVE BASH WINDOW
+}
+
+start_bash() {
+
   tmux new-window -n "BASH" -t "$SESSION"
   tmux send-key -t 'BASH' "source $VENV" C-m
   tmux send-key -t 'BASH' "cd $WORK_DIR" C-m
   tmux send-key -t 'BASH' "clear" C-m
+}
 
-  #LIVE SERVER WINDOW
+start_docker_compose() {
+
+  # CREATE SESSION
+  tmux new-session -d -s $SESSION
+
+  # VIM WINDOW
+  start_vim
+
+  # BASH WINDOW
+  start_bash
+
+  # LIVE-SERVER WINDOW
+  tmux new-window -n "LIVE-SERVER" -t "$SESSION"
+  tmux send-key -t 'LIVE-SERVER' "source $VENV" C-m
+  tmux send-key -t 'LIVE-SERVER' "cd $WORK_DIR" C-m
+  tmux send-key -t 'LIVE-SERVER' "clear" C-m
+  tmux send-key -t 'LIVE-SERVER' 'docker compose up --build' C-m
+}
+
+# Function to start the Django setup
+start_django() {
+  # CREATE SESSION
+  tmux new-session -d -s $SESSION
+
+  # VIM WINDOW
+  start_vim
+
+  # BASH WINDOW
+  start_bash
+
+  # LIVE SERVER WINDOW
   tmux new-window -n "LIVE-SERVER" -t "$SESSION"
   tmux send-key -t 'LIVE-SERVER' "source $VENV" C-m
   tmux send-key -t 'LIVE-SERVER' "cd $WORK_DIR" C-m
   tmux send-key -t 'LIVE-SERVER' "clear" C-m
   tmux send-key -t 'LIVE-SERVER' './manage.py runserver' C-m
+}
+
+# Function to start the NestJS setup (add your logic here)
+start_nestjs() {
+  # CREATE SESSION
+  tmux new-session -d -s $SESSION
+
+  # VIM WINDOW
+  start_vim
+
+  # BASH WINDOW
+  start_bash
+
+  # LIVE SERVER WINDOW
+  tmux new-window -n "LIVE-SERVER" -t "$SESSION"
+  tmux send-key -t 'LIVE-SERVER' "cd $WORK_DIR" C-m
+  tmux send-key -t 'LIVE-SERVER' "clear" C-m
+  tmux send-key -t 'LIVE-SERVER' 'npm run start' C-m # Adjust for your NestJS command
+}
+
+# Parse command-line options
+while getopts ":djc" opt; do
+  case $opt in
+  d)
+    if [ -z "$EXIST" ]; then
+      start_django
+    fi
+    ;;
+  j)
+    if [ -z "$EXIST" ]; then
+      start_nestjs
+    fi
+    ;;
+  c)
+    if [ -z "$EXIST" ]; then
+      start_docker_compose
+    fi
+    ;;
+  \?)
+    echo "Invalid option: -$OPTARG" >&2
+    exit 1
+    ;;
+  esac
+done
+
+# Attach to session if no options are provided
+if [ "$OPTIND" -eq 1 ]; then
+  echo "Usage: $0 -d (for Django) or -j (for NestJS)"
+  exit 1
 fi
-tmux attach-session -t "$SESSION":1
+
+tmux attach-session -t "$SESSION:1"
