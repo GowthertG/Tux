@@ -1,46 +1,60 @@
-# djt
 
-A simple automation script to streamline your Django development setup using `tmux` and Neovim.
+# Tux
 
-## Overview
-
-This script automates the creation of a `tmux` session tailored for Django development. It provides dedicated windows for code editing, command execution, and running the development server, helping you maintain an organized workflow.
+`tux` is a flexible tmux-based automation script that sets up project environments for various development workflows such as Django, NestJS, or Docker Compose. It creates separate `tmux` windows for code editing (Neovim), shell commands, and live server execution.
 
 ## Features
 
-- **Neovim** window for seamless code editing.
-- **BASH** window for executing commands and running scripts.
-- **Live Server** window to launch and run your Django application.
+- **Vim Window**: Launches Neovim for code editing.
+- **BASH Window**: Prepares a terminal window for running commands.
+- **Live Server Window**: Automatically starts either the Django server, NestJS app, or Docker Compose.
 
 ## Installation
 
-To install, copy the script to your local bin:
+1. Clone the repository and copy the script to your local `bin` folder:
 
-```bash
-curl -o ~/.local/bin/djt https://raw.githubusercontent.com/GowthertG/django-tmux/main/djt
-chmod +x ~/.local/bin/djt
-```
+   ```bash
+   git clone https://github.com/GowthertG/Tux.git
+   cp Tux/tux ~/.local/bin/tux
+   chmod +x ~/.local/bin/tux
+   ```
 
-Make sure to add `~/.local/bin` to your PATH if it's not already included.
+2. Make sure `~/.local/bin` is added to your PATH if it's not already included.
 
 ## Usage
 
-1. Navigate to your Django project directory:
+### Options
+
+- `-d`: Starts a tmux session with a Django development server.
+- `-j`: Starts a tmux session with a NestJS application.
+- `-c`: Starts a tmux session with Docker Compose.
+
+### Example Commands
+
+1. **To start a Django project**:
 
    ```bash
-   cd /path/to/your/project
+   tux -d
    ```
 
-2. Start the `tmux` session:
+2. **To start a NestJS project**:
 
    ```bash
-   djt
+   tux -j
    ```
 
-3. Switch between windows using `Ctrl-b` followed by the window number (0, 1, 2).
-
-4. Detach from the session with `Ctrl-b` + `d`. To reattach in the same directory, run:
+3. **To start a Docker Compose setup**:
 
    ```bash
-   djt
+   tux -c
    ```
+
+4. **To reattach to an existing session**:
+
+   Simply run the same command, or just `tux` and `tmux` will reattach to the session.
+
+## Requirements
+
+- Ensure you have a `.venv` directory in your project root for the Python virtual environment (or adjust the script if you use a different name).
+- `tmux` installed.
+- `Neovim` installed.
