@@ -21,6 +21,21 @@ start_bash() {
   tmux send-key -t 'BASH' "clear" C-m
 }
 
+start_leetcode() {
+  WORK_DIR="~/Desktop/WorkSpace/LeetCode/"
+  # CREATE SESSION
+  tmux new-session -d -s $SESSION
+
+  # VIM WINDOW
+  start_vim
+
+  # BASH WINDOW
+  start_bash
+
+  # Neetcode Course WINDOW
+  tmux new-window -n "neetcode" -t "$SESSION"
+  tmux send-key -t 'neetcode' "neetcode" C-m
+}
 start_docker_compose() {
 
   # CREATE SESSION
@@ -78,7 +93,7 @@ start_nestjs() {
 }
 
 # Parse command-line options
-while getopts ":djc" opt; do
+while getopts ":djcl" opt; do
   case $opt in
   d)
     if [ -z "$EXIST" ]; then
@@ -95,6 +110,11 @@ while getopts ":djc" opt; do
       start_docker_compose
     fi
     ;;
+  l)
+    if [ -z "$EXIST" ]; then
+      start_leetcode
+    fi
+    ;;
   \?)
     echo "Invalid option: -$OPTARG" >&2
     exit 1
@@ -104,7 +124,7 @@ done
 
 # Attach to session if no options are provided
 if [ "$OPTIND" -eq 1 ]; then
-  echo "Usage: tux -d (for Django) or -j (for NestJS) -c (for Docker Compose)"
+  echo "Usage: tux -d (for Django) or -j (for NestJS) -c (for Docker Compose) -l (for LeetCode)"
   exit 1
 fi
 
